@@ -1,4 +1,37 @@
 
+function storeVar(el) {
+  
+
+  
+
+  // const abi = require('ethereumjs-abi');
+  // const crypto = require('crypto');
+
+  // This could come from user input or be randomly generated.
+  var amount = el.getAttribute('value'); 
+  console.log(amount);
+  // const nonce = "0x" + crypto.randomBytes(32).toString('hex');
+
+  // const hash = "0x" + abi.soliditySHA3(
+  // ["bool", "uint256"],
+  // [amount, nonce]).toString('hex');
+
+  // console.log(amount);
+  // console.log(hash);
+// Importing 'crypto' module 
+// const crypto = require("node_modules/crypto-js"), 
+  
+// // Returns the names of supported hash algorithms  
+// // such as SHA1,MD5 
+// hash = crypto.getHashes(); 
+
+// // 'digest' is the output of hash function containing  
+// // only hexadecimal digits 
+// hashPwd = crypto.createHash('sha1').update(amount).digest('hex'); 
+
+// console.log(hash);  
+
+} 
 
 App = {
   
@@ -68,9 +101,6 @@ App = {
       return
     }
 
-    // Update app loading state
-    // App.setLoading(true)
-
     // Render Account
     $('#account').html(App.account)
 
@@ -81,46 +111,54 @@ App = {
     // App.setLoading(false)
   },
 
-  renderTasks: async () => {
-    // Load the total task count from the blockchain
-    const taskCount = await App.CoinFlip.taskCount()
-    const $taskTemplate = $('.taskTemplate')
+  // renderTasks: async () => {
+  //   // Load the total task count from the blockchain
+  //   const taskCount = await App.CoinFlip.taskCount()
+  //   const $taskTemplate = $('.taskTemplate')
 
-    // Render out each task with a new task template
-    for (var i = 1; i <= taskCount; i++) {
-      // Fetch the task data from the blockchain
-      const task = await App.CoinFlip.tasks(i)
-      const taskId = task[0].toNumber()
-      const taskContent = task[1]
-      const taskCompleted = task[2]
+  //   // Render out each task with a new task template
+  //   for (var i = 1; i <= taskCount; i++) {
+  //     // Fetch the task data from the blockchain
+  //     const task = await App.CoinFlip.tasks(i)
+  //     const taskId = task[0].toNumber()
+  //     const taskContent = task[1]
+  //     const taskCompleted = task[2]
 
-      // Create the html for the task
-      const $newTaskTemplate = $taskTemplate.clone()
-      $newTaskTemplate.find('.content').html(taskContent)
-      $newTaskTemplate.find('input')
-                      .prop('name', taskId)
-                      .prop('checked', taskCompleted)
-                      // .on('click', App.toggleCompleted)
+  //     // Create the html for the task
+  //     const $newTaskTemplate = $taskTemplate.clone()
+  //     $newTaskTemplate.find('.content').html(taskContent)
+  //     $newTaskTemplate.find('input')
+  //                     .prop('name', taskId)
+  //                     .prop('checked', taskCompleted)
+  //                     // .on('click', App.toggleCompleted)
 
-      // Put the task in the correct list
-      if (taskCompleted) {
-        $('#completedTaskList').append($newTaskTemplate)
-      } else {
-        $('#taskList').append($newTaskTemplate)
-      }
+  //     // Put the task in the correct list
+  //     if (taskCompleted) {
+  //       $('#completedTaskList').append($newTaskTemplate)
+  //     } else {
+  //       $('#taskList').append($newTaskTemplate)
+  //     }
 
-      // Show the task
-      $newTaskTemplate.show()
-    }
-  },
+  //     // Show the task
+  //     $newTaskTemplate.show()
+  //   }
+  // },
 
 }
 
 $(() => {
   $(window).load(() => {
     App.load()
+    // let secretChoice = ""
+
+  
+
+    
+
   })
 })
+
+
 
 jQuery(document).ready(function($){
 
@@ -141,4 +179,6 @@ jQuery(document).ready(function($){
       }
     }, 100);
   });
+ 
 });
+
