@@ -1,121 +1,89 @@
-pragma solidity 0.6.6;
+pragma solidity ^0.6.6;
 
-import "https://github.com/smartcontractkit/chainlink/blob/master/evm-contracts/src/v0.6/VRFConsumerBase.sol";
+// Deploy with this hash 0x83853f8c4ca91ae85231d68dec421e7d9210f65860b863a574dfc0dc0c7e815e
+// Equivalent to 0 hashed with 0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb
 
-contract RandomNumberConsumer is VRFConsumerBase {
+contract CoinFlip {
     
-    bytes32 internal keyHash;
-    uint256 internal fee;
+    address payable player = msg.sender;
+    address payable public casino = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
+    uint betAmount;
+    bytes32 commitHash;
+    uint result;
+    bool win;
+    address payable contractAddress = address(this);
     
-    uint256 public randomResult;
-    address payable public player1;
-    bytes32 public player1Commitment;
-    uint256 randomNumberNonce;
-    uint256 public betAmount = 1 wei;
-
-    address payable public player2;
-    bool public player2Choice;
-
-    uint256 public expiration = 2**256-1;
-    uint256 seed;
+    constructor (bytes32 _commitHash) public{
+        commitHash = _commitHash;
+        flipCoin();
+    }
     
-    /**
-     * Constructor inherits VRFConsumerBase
-     * 
-     * Network: Kovan
-     * Chainlink VRF Coordinator address: 0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9
-     * LINK token address:                0xa36085F69e2889c224210F603D836748e7dC0088
-     * Key Hash: 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4
-     */
-    constructor(bytes32 commitment, address payable _player2, uint256 seed) 
-        VRFConsumerBase(
-            0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9, // VRF Coordinator
-            0xa36085F69e2889c224210F603D836748e7dC0088  // LINK Token
-        ) public payable
-    {
-        keyHash = 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4;
-        fee = 0.1 * 10 ** 18; // 0.1 LINK
-        player1 = msg.sender;
-        player1Commitment = commitment;
-        player2 = _player2;
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {}
+    
+    
+    function sendViaCall(address payable _to) internal {
+        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+    }
+    
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+    
+    function flipCoin() internal {
+        result = uint(keccak256(abi.encodePacked(now, commitHash, player))) % 2;
+    }
+    
+    function seeResult() public view returns(uint){
+        require (betAmount > 0, "Please place your bet" );
+        return result;
+    }
+    
+    // modifier betsPlaced {
+    //     require (betAmount > 0, "Please place your bet" );
+    //     require (getBalance() == 2 * betAmount, "Please wait for the casino to match your bet" );
+    //     _;
+    // }
+    
+    function placeBet() public payable {
+        require(msg.value > 0);
         betAmount = msg.value;
+        sendViaCall(contractAddress);
     }
     
-    function random() internal returns (uint) {
-    getRandomNumber(seed);
-    uint _randomNumber = uint(keccak256(abi.encodePacked(now, msg.sender, randomNumberNonce))) % 2;
-    
-    return _randomNumber;
+    function matchBet() external payable {
+        require (betAmount > 0, "Please place your bet" );
+        require(msg.sender == casino);
+        require(msg.value == betAmount);
+        sendViaCall(contractAddress);
     }
-    function flipCoin() internal returns (bool) {
-        uint randomNumber = random();
-        bool winningBet;
-        if (randomNumber == 0){
-            winningBet = true;
+    
+    function payOut() internal{
+        if (win == true){
+            player.transfer(address(this).balance);
         }
         else {
-            winningBet = false;
-        }
-        return winningBet;
-    }
-
-    
-       
-  
-
-    /** 
-     * Requests randomness from a user-provided seed
-     */
-    function getRandomNumber(uint256 userProvidedSeed) internal returns (bytes32 requestId) {
-        require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
-        return requestRandomness(keyHash, fee, userProvidedSeed);
-    }
-
-    /**
-     * Callback function used by VRF Coordinator
-     */
-    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        randomNumberNonce = randomness;
-        
-     
-    }
-    
-    function cancel() public {
-        require(msg.sender == player1);
-        require(player2 == address(0));
-
-        betAmount = 0;
-        msg.sender.transfer(address(this).balance);
-    }
-
-    function takeBet() public payable {
-        require(player2 == address(0));
-        require(msg.value == betAmount);
-
-        player2 = msg.sender;
-        player2Choice = flipCoin();
-
-        expiration = now + 24 hours;
-    }
-
-    function reveal(bool choice, uint256 _nonce) public payable {
-        require(player2 != address(0));
-        require(now < expiration);
-
-        require(keccak256(abi.encodePacked(choice, _nonce)) == player1Commitment);
-
-        if (player2Choice == choice) {
-            player2.transfer(address(this).balance);
-        } else {
-            player1.transfer(address(this).balance);
+            casino.transfer(address(this).balance);
         }
     }
-
-    function claimTimeout() public {
-        require(now >= expiration);
-
-        player2.transfer(address(this).balance);
+    
+    function reveal(uint  _choice, bytes32 _hashValue) public payable {
+        require (betAmount > 0, "Please place your bet" );
+        require (getBalance() == 2 * betAmount, "Please wait for the casino to match your bet" );
+        require(keccak256(abi.encodePacked(_choice, _hashValue)) == commitHash);
+        if(_choice == result ){
+            win = true;
+        }
+        else {
+            win =  false;
+        }
+        payOut();
     }
- 
-   
+    
+    
+    
 }
