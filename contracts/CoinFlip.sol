@@ -5,16 +5,37 @@ pragma solidity ^0.6.6;
 
 contract CoinFlip {
     
-    address payable player = msg.sender;
-    address payable public casino = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
-    uint betAmount;
+    address payable player;
+    
+    address payable casino;
+    uint256 public casinoDeposit;
+    uint256 betAmount;
+    uint256 maxBet = .001 ether;
     bytes32 commitHash;
-    uint result;
+    uint gameTimeOut;
+    uint256  matchBetTimeOut;
+    uint256 revealTimeOut;
+    uint256 result;
     bool win;
     address payable contractAddress = address(this);
     
-    constructor (bytes32 _commitHash) public{
+    constructor () public payable{
+        require(msg.value == 1 ether);
+        casinoDeposit = msg.value;
+    }
+    
+    
+    function playerCommit(bytes32 _commitHash) external payable {
+        require(msg.value < casinoDeposit);
+        require(msg.value >= 1 wei, "Bets must be  at least 1 wei");
+        require(msg.value <= maxBet, "Max bet exceeded");
+        player = msg.sender;
+        betAmount = msg.value;
         commitHash = _commitHash;
+        sendViaCall(contractAddress, betAmount);
+        matchBet();
+        // gameTimeOut = now + 5 minutes;
+        // timer(gameTimeOut);
         flipCoin();
     }
     
@@ -25,8 +46,19 @@ contract CoinFlip {
     fallback() external payable {}
     
     
-    function sendViaCall(address payable _to) internal {
-        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
+    // function timer(uint256 _timeLeft) internal{
+    //   while(now < _timeLeft ) {}
+    //     //  User bet is never matched
+    //     //  User places bet, is matched, player never reveals
+    //   if(getBalance() > 0){
+    //     //  Send money to the casino
+    //      casino.transfer(address(this).balance);
+    //   }
+      
+    // }
+    
+    function sendViaCall(address payable _to, uint256 _amount) internal {
+        (bool sent, bytes memory data) = _to.call{value: _amount}("");
         require(sent, "Failed to send Ether");
     }
     
@@ -49,32 +81,43 @@ contract CoinFlip {
     //     _;
     // }
     
-    function placeBet() public payable {
-        require(msg.value > 0);
-        betAmount = msg.value;
-        sendViaCall(contractAddress);
-    }
+    // function placeBet() public payable {
+    //     require(now < gameTimeOut, "Game Timed Out");
+    //     require(msg.value > 1 wei, "Bets must be  at least 1 wei");
+    //     require(msg.value < maxBet, "Max bet exceeded");
+    //     betAmount = msg.value;
+    //     sendViaCall(contractAddress, betAmount);
+    //     matchBetTimeOut = now + 1 minutes;
+    // }
     
-    function matchBet() external payable {
-        require (betAmount > 0, "Please place your bet" );
-        require(msg.sender == casino);
-        require(msg.value == betAmount);
-        sendViaCall(contractAddress);
+    function matchBet() internal {
+        casinoDeposit = casinoDeposit - betAmount;
+        // sendViaCall(contractAddress, betAmount);
+        // require(now < gameTimeOut, "Game Timed Out");
+        // require (betAmount > 0, "Please place your bet" );
+        // require(msg.sender == casino);
+        // require(msg.value == betAmount);
+        // sendViaCall(contractAddress);
     }
     
     function payOut() internal{
         if (win == true){
-            player.transfer(address(this).balance);
+            // player.transfer(address(this).balance);
+            sendViaCall(player, 2 * betAmount);
+            betAmount = 0;
         }
         else {
-            casino.transfer(address(this).balance);
+            // casino.transfer(address(this).balance);
+            casinoDeposit = casinoDeposit + 2* betAmount;
+            betAmount = 0;
         }
     }
     
     function reveal(uint  _choice, bytes32 _hashValue) public payable {
+        // require(now < gameTimeOut, "Game Timed Out");
         require (betAmount > 0, "Please place your bet" );
-        require (getBalance() == 2 * betAmount, "Please wait for the casino to match your bet" );
-        require(keccak256(abi.encodePacked(_choice, _hashValue)) == commitHash);
+        // require (getBalance() == 2 * betAmount, "Please wait for the casino to match your bet" );
+        require(keccak256(abi.encodePacked(_choice, _hashValue)) == commitHash, "Commitment hash does not match");
         if(_choice == result ){
             win = true;
         }
