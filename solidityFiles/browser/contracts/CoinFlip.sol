@@ -1,12 +1,4 @@
-pragma solidity ^0.4.21;
-
-contract CoinFlip {
-    address public player1;
-    bytes32 public player1Commitment;
-    uint256 randomNumberNonce = 0;
-    uint256 public betAmount = 1 wei;
-
-    address public player2;pragma solidity ^0.6.6;
+pragma solidity ^0.6.6;
 
 // Deploy with this hash 0x83853f8c4ca91ae85231d68dec421e7d9210f65860b863a574dfc0dc0c7e815e
 // Equivalent to 0 hashed with 0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb
