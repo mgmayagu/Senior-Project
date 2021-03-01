@@ -1,2 +1,23 @@
-# SeniorProject 2020-2021
-Senior project: Roulette game
+- Description
+
+- Map Hirarchy 
+
+- Walkthrought the files
+
+- Mathamask
+
+- Files installation
+
+- Contract 
+
+- Compile Smart Contract 
+
+- Deploying Contract
+
+- Client-Side Application - The front end 
+
+- Updating index.js
+
+- Starting Server 
+
+- Interacting with UI
