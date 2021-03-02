@@ -2,8 +2,8 @@
 # CoinFlip 
 #### by Green Team 
 
-Clone the repository for the Front-End
-Copy and paste code from CoinFlip.sol into Remix
+- Clone the repository for the Front-End
+- Copy and paste code from CoinFlip.sol into Remix
 
 ---
 
