@@ -214,5 +214,12 @@ jQuery(document).ready(function($){
         console.log('it is tails');
       }
     }, 100);
+
+    contract.methods.reveal (hasedBet).send( {from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
+      console.log("Transaction: ", tx); 
+    }).catch(function(txt)
+    {
+      console.log(txt);
+    });
   });
   });
