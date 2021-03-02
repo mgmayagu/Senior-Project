@@ -1,6 +1,6 @@
 // Source code to interact with smart contract
 //connection with node
-var web3 = new Web3(Web3.givenProvider || 'http://localhost:3300/');
+var web3 = new Web3(Web3.givenProvider);
 // web3 = new Web3(web3.currentProvider);
 // contractAddress and abi are setted after contract deploy
   var contractAddress = '0xd9145CCE52D386f254917e481eB44e9943F39138';
@@ -118,13 +118,13 @@ web3.eth.getAccounts(function(err, accounts) {
 });
 
 // Smart contract functions
-function registerSetInfo() {
-  info = $("#newInfo").val();
-  contract.methods.setInfo (info).send( {from: account}).then( function(tx) { 
-    console.log("Transaction: ", tx); 
-  });
-  $("#newInfo").val('');
-}
+// function registerSetInfo() {
+//   info = $("#newInfo").val();
+//   contract.methods.setInfo (info).send( {from: account}).then( function(tx) { 
+//     console.log("Transaction: ", tx); 
+//   });
+//   $("#newInfo").val('');
+// }
 
 // function registerGetInfo() {
 //   contract.methods.getInfo().call().then( function( info ) { 
@@ -133,45 +133,7 @@ function registerSetInfo() {
 //   });    
 // }
 
-
-function playerCommitBet() {
-  let allAreFilled = true;
-  var betChoice = document.querySelector('input[name="coinFlip"]:checked').value; //stores the choice: 0/1
-  var betAmt = parseFloat($('#newInfo').val());; // stores the mount of the bet
-
-  document.getElementById("bet-form").querySelectorAll("[required]").forEach(function(i) {
-    if (!allAreFilled) return;
-    if (!i.value) allAreFilled = false;
-    if (i.type === "radio") {
-      let radioValueCheck = false;
-      document.getElementById("bet-form").querySelectorAll(`[name=${i.name}]`).forEach(function(r) {
-        if (r.checked) radioValueCheck = true;
-      })
-      allAreFilled = radioValueCheck;
-    }
-  })
-  if (!allAreFilled) {
-    //alert('Fill all the fields');
-  }
-  else {
-
-  }
-
-  alert(betChoice);
-  // hashes the choice
-  var hasedBet = keccak256(betChoice);
-
-  alert(hasedBet);
-  
-  $("#newInfo").val('');
-  contract.methods.playerCommit (hasedBet).send( {from: account, value:web3.toWei(betAmt,'wei')}).then( function(tx) { 
-    console.log("Transaction: ", tx); 
-  }).catch(function(txt)
-  {
-    console.log(txt);
-  });
-};
-
+// Function to hash the the choice
 function keccak256(...args) {
   args = args.map(arg => {
     if (typeof arg === 'string') {
@@ -193,3 +155,64 @@ function keccak256(...args) {
 
   return web3.sha3(args, { encoding: 'hex' })
 }
+
+// When player clicks 'Place bet' button, playerCommit is called
+function playerCommitBet() {
+  let allAreFilled = true;
+  var betChoice = document.querySelector('input[name="coinFlip"]:checked').value; //stores the choice: 0/1
+  var betAmt = $('#newInfo').val(); // stores the mount of the bet
+
+  document.getElementById("bet-form").querySelectorAll("[required]").forEach(function(i) {
+    if (!allAreFilled) return;
+    if (!i.value) allAreFilled = false;
+    if (i.type === "radio") {
+      let radioValueCheck = false;
+      document.getElementById("bet-form").querySelectorAll(`[name=${i.name}]`).forEach(function(r) {
+        if (r.checked) radioValueCheck = true;
+      })
+      allAreFilled = radioValueCheck;
+    }
+  })
+  if (!allAreFilled) {
+    //alert('Fill all the fields');
+  }
+  else {
+
+  }
+
+  // hashes the choice
+  // var hasedBet = keccak256(betChoice);
+  var hasedBet = web3.utils.soliditySha3(betChoice)
+
+  console.log(betAmt);
+  console.log(betChoice);
+  console.log(hasedBet);
+  
+  
+  $("#newInfo").val('');
+  contract.methods.playerCommit (hasedBet).send( {from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
+    console.log("Transaction: ", tx); 
+  }).catch(function(txt)
+  {
+    console.log(txt);
+  });
+};
+
+// Click the coin and calls on reveal 
+jQuery(document).ready(function($){
+
+  $('#coin').on('click', function(){
+    var flipResult = Math.random();
+    $('#coin').removeClass();
+    setTimeout(function(){
+      if(flipResult <= 0.5){
+        $('#coin').addClass('heads');
+        console.log('it is head');
+      }
+      else{
+        $('#coin').addClass('tails');
+        console.log('it is tails');
+      }
+    }, 100);
+  });
+  });
