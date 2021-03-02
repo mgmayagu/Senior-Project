@@ -1,6 +1,9 @@
 
 # CoinFlip 
-### by Green Team 
+#### by Green Team 
+
+Clone the repository for the Front-End
+Copy and paste code from CoinFlip.sol into Remix
 
 ---
 
@@ -28,7 +31,6 @@
 1.	Casino will deploy the contract by sending 1 Ether of value and inputting a seed for random number generation
 2.	A contract address will be deployed (we can copy that address directly into the front end). The contract address will always be the same. This is the address needed for players to join the game.
 3.	The contract will stay deployed until the casino deposit runs out
-
 
 #### After the contract is deployed:
 
