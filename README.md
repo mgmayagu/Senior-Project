@@ -2,7 +2,7 @@
 # CoinFlip 
 ### by Green Team 
 
-CoinFlip is a game
+---
 
 ### Metamask 
 
@@ -13,7 +13,7 @@ CoinFlip is a game
  - Connect account with Remix
  - Add tokens
  
- Find a more detailed instructions here[https://developers.rsk.co/tutorials/ethereum-devs/remix-and-metamask-with-rsk-testnet/]
+ Find a more detailed instructions [here](https://developers.rsk.co/tutorials/ethereum-devs/remix-and-metamask-with-rsk-testnet/)
 
 <!-- ### Walkthrough GIF
 
