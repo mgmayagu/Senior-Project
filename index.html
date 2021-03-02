@@ -33,7 +33,7 @@
               <label for="heads">Heads</label><br>
               <input type="radio" id="tails" name="coinFlip" value="0" required>
               <label for="tails">Tails</label><br>
-              <button id="check" class="btn btn-primary">Place Bet</button>
+              <button id="check" class="btn btn-primary" onclick="playerCommitBet()">Place Bet</button>
             </form>
           </div>
         </form>
@@ -112,26 +112,6 @@
       clearInterval(interval);
       });
 
-      document.getElementById("check").onclick = function() {
-      let allAreFilled = true;
-      document.getElementById("bet-form").querySelectorAll("[required]").forEach(function(i) {
-        if (!allAreFilled) return;
-        if (!i.value) allAreFilled = false;
-        if (i.type === "radio") {
-          let radioValueCheck = false;
-          document.getElementById("bet-form").querySelectorAll(`[name=${i.name}]`).forEach(function(r) {
-            if (r.checked) radioValueCheck = true;
-          })
-          allAreFilled = radioValueCheck;
-        }
-      })
-      if (!allAreFilled) {
-        //alert('Fill all the fields');
-      }
-      else {
-
-      }
-    };
       </script>
 
   </body>
