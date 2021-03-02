@@ -6,6 +6,16 @@ body {
   h1{
     text-align: center;
   }
+  #panel {
+    display: none;
+  }
+
+  #panel2 {
+    display: block;
+  }
+  #panel3 {
+    display: block;
+  }
   #coin {
     position: relative;
     margin: 0 auto;
