@@ -94,6 +94,7 @@ contract CoinFlip is VRFConsumerBase {
     
     function seeResult() public view returns(uint){
         require (playerMap[msg.sender].betAmount > 0, "Please place your bet" );
+        require(randomnum != 0, 'please wait until random num has been generated ~ 20 secs');
         return playerMap[msg.sender].result;
     }
     
@@ -115,7 +116,7 @@ contract CoinFlip is VRFConsumerBase {
     
     function reveal(uint  _choice, bytes32 _hashValue) public payable {
         require(now < playerMap[msg.sender].gameTimeOut, "Game Timed Out");
-        require(randomnum != 0);
+        require(randomnum != 0, 'please wait until random num has been generated ~ 20 secs');
         require (playerMap[msg.sender].betAmount > 0, "Please place your bet" );
         // require (getBalance() == 2 * betAmount, "Please wait for the casino to match your bet" );
         require(keccak256(abi.encodePacked(_choice, _hashValue)) == playerMap[msg.sender].commitHash, "Commitment hash does not match");
