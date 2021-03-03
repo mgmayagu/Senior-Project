@@ -28,22 +28,24 @@
 
 #### Steps to deploy the contract:
 
-1.	Casino will deploy the contract by sending 1 Ether of value and inputting a seed for random number generation
+1.	Casino will deploy the contract
 2.	A contract address will be deployed (we can copy that address directly into the front end). The contract address will always be the same. This is the address needed for players to join the game.
-3.	The contract will stay deployed until the casino deposit runs out
+3.	After deploying contract the Casino must deposit money using the deposit money function (recommended amount is 1 ether)
+4.	Contract can deposit any amount of money to contract at any time
 
 #### After the contract is deployed:
 
 1.	Player will join contract by deploying at the contract address
 2.	Player will choose heads or tails
-3.	Player will input a bet amount between 1 wei and 1 millether
-4.	Upon submission the choice of heads or tails should be hashed concatenated with a randomly generated hash and the hashed again using keccak256
-5.	The randomness number generation process may take time (about 20 seconds) so maybe stall for a little before allowing to see results or reveal choice
+3.	Player will input a bet amount between 1 wei and 1 milli-ether
+4.	Upon submission, the choice of heads or tails should be concatenated with a randomly generated hash and the hashed using keccak256
+5.	The random number generation process may take time (about 5 seconds)
 6.	After submitting the bet, the player will be able to see the results of the coin flip 
 7.	The player will then reveal his/her choice by inputting the choice and the randomly generated hash
 8.	If the player wins the money will automatically be sent to their wallet, if they lose the money is sent to the casino deposit
-9.	If the player fails to reveal their choice within 5 minutes of inputting their choice, they will automatically lose, and the money will be sent to the casino deposit. 
-10.	The player will not be able to play another round until they reveal their choice or the 5 minutes are up. 
+9.	The player can choose to forfeit the bet instead of revealing
+10.	If the player fails to reveal their choice within 2 minutes of inputting their choice, they will automatically lose, and the money will be sent to the casino deposit. 
+11.	The player will not be able to play another round until they reveal their choice, forfeit their bet, or the 2 minutes are up. 
 
 
 <!-- ### Walkthrough GIF
