@@ -21,6 +21,7 @@ contract CoinFlip {
     address[] playerAddressArray; // Array of all players addresses of players playing the game (this is iterable)
     address payable casino;  // Address of the casino, will not change after contract is deployed
     uint256 public casinoDeposit = 0; // Value of the casino deposit
+    uint public balance;
     uint256 maxBet = .001 ether; 
     address payable contractAddress = address(this);  // Address of this contract
     
@@ -60,7 +61,11 @@ contract CoinFlip {
         sendViaCall(contractAddress, playerMap[_playerAddress].betAmount); // Sends bet to the contract
         matchBet(playerMap[_playerAddress].betAmount); // Contract will match the bet
         playerMap[_playerAddress].gameTimeOut = now + 2 minutes; // Player will have 2 minutes from when they place the bet to claim their winnings
-        playerMap[_playerAddress].result = flipCoin(); // Stores the result of the coin flip for that player
+        playerMap[_playerAddress].result = 
+        
+        
+        
+        (); // Stores the result of the coin flip for that player
     }
     
     // Function to receive Ether. msg.data must be empty
@@ -78,6 +83,11 @@ contract CoinFlip {
     // Funtion to return total balance of the contract which is casinoDeposit + all bets currently on the table
     function getBalance() public view returns (uint) {
         return address(this).balance;
+    }
+    
+    function contractCreated() internal {
+        casino = msg.sender; 
+        balance = msg.value;
     }
     
     // Function to generate pseudorandom number 1 or 0
