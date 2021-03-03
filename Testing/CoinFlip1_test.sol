@@ -1,3 +1,5 @@
+
+  
 // SPDX-License-Identifier: GPL-3.0
     
 pragma solidity ^0.6.6;
@@ -8,14 +10,14 @@ import "../github/mgmayagu/Senior-Project/contracts/CoinFlip.sol";
 
 contract CoinFlipTest is CoinFlip {
     // create a new instance of Value contract
-    //CoinFlip cp;
+    CoinFlip cp;
     
     
     //Define variables where address 0 is the casino and address 1 serves as the player 1
     address acc0; // casino
     address acc1; // player 1
 
-    
+    // beforeAll works before running each test
     function beforeAll () public returns (bool){
         
         acc0 = TestsAccounts.getAccount(0); 
@@ -40,7 +42,7 @@ contract CoinFlipTest is CoinFlip {
     // Tests if player choice is commited correctly and if the balance of the contract increased.
     /// #sender: account-1
     /// #value: 2
-    function testPlayer1Commitment() public payable {
+    function testPlayerCommitment() public payable {
         Assert.equal(msg.sender, acc1, 'acc1 should be the sender of this function check');
         Assert.equal(msg.value, 2, '2 should be the value of this function check');
         uint init_balance = getBalance();
@@ -48,17 +50,26 @@ contract CoinFlipTest is CoinFlip {
         Assert.equal(acc1, msg.sender, 'player 1 should be set to acc1');
     }
     
+     // Use the return value (true or false) to test the contract
+    function checkSuccess() public pure returns (bool) {
+        return true;
+    }
+    
     // Balance should be 10 (initial) + 2 (player1 and player2) = 12 total
     function checkBalance() public {
         Assert.equal(getBalance(), 12, "Balance should be 10 (initial) + 2 (player1 and player2) = 12");
     }
     
-    function checkSuccess() public pure returns (bool) {
-        // Use the return value (true or false) to test the contract
-        return true;
+   
+     function checkSuccess2() public {
+        // Use 'Assert' to test the contract,
+        Assert.equal(uint(2), uint(2), "2 should be equal to 2");
+        Assert.notEqual(uint(2), uint(3), "2 should not be equal to 3");
     }
-    
 
+    function checkFailure() public {
+        Assert.notEqual(uint(1), uint(2), "1 is not equal to 2");
+    }
     
 
 }
