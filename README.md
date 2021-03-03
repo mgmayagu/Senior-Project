@@ -16,6 +16,7 @@
     │   ├── index.js            # Connects the smart contract with the app
     │   ├── package.json        # Loads dependecies
     │   ├── server.js           # Deploys the app
+    │   └── style.css           # Text styling
     ├── Testing  
     │   └── CoinFlip1_test.sol  # End-to-end, integration tests 
     └── README.md
