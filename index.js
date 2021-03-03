@@ -177,7 +177,10 @@ function playerCommitBet() {
     //alert('Fill all the fields');
   }
   else {
-
+    $('#check').click(function () {
+      $('.js-timeout').text("2:00");
+      countdown();
+      });
   }
 
   // hashes the choice
@@ -207,11 +210,11 @@ jQuery(document).ready(function($){
     setTimeout(function(){
       if(flipResult <= 0.5){
         $('#coin').addClass('heads');
-        console.log('it is head');
+        console.log('it is tails');
       }
       else{
         $('#coin').addClass('tails');
-        console.log('it is tails');
+        console.log('it is heads');
       }
     }, 100);
 
