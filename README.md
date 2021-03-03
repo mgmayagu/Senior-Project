@@ -1,4 +1,3 @@
-
 # CoinFlip 
 #### by Green Team 
 
@@ -73,4 +72,3 @@ The last step is to execute the express server. Input the command below into the
 - Click on the Connect button when the Metamask Wallet pops up
 
 <!-- #### Interacting with UI -->
-
