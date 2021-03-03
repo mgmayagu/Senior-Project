@@ -46,9 +46,9 @@ contract CoinFlipTest is CoinFlip {
         Assert.equal(acc1, msg.sender, 'player 1 should be set to acc1');
     }
     
-    // Balance should be 5 (initial) + 2 (player1 and player2) = 7 total
+    // Balance should be 10 (initial) + 2 (player1 and player2) = 12 total
     function checkBalance() public {
-        Assert.equal(getBalance(), 12, "Balance should be 10 (initial) + 2 (player1 and player2) = 7");
+        Assert.equal(getBalance(), 12, "Balance should be 10 (initial) + 2 (player1 and player2) = 12");
     }
     
     function checkSuccess() public pure returns (bool) {
