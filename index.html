@@ -23,7 +23,7 @@
             <table>
               <tr>
                 <!-- min="0.000000000000000001"-->
-                  <input class="form-control" id="newInfo" placeholder="Amount in ETH" type="number" max="0.001" min="0.000000000000000001" required>
+                  <input class="form-control" id="newInfo" placeholder="Amount in ETH" type="text" max="0.001" min="0.000000000000000001" required></input>
                 </td>
               </tr>
             </table>
@@ -31,11 +31,11 @@
           <div>
             <h2 class="sub-header">Choose Heads or Tails</h2>
             <form action="/action_page.php">
-              <input type="radio" id="heads" name="coinFlip" value="1" required>
+              <input type="radio" id="heads" name="coinFlip" value="heads" required>
               <label for="heads">Heads</label><br>
-              <input type="radio" id="tails" name="coinFlip" value="0" required>
+              <input type="radio" id="tails" name="coinFlip" value="tails" required>
               <label for="tails">Tails</label><br>
-              <button id="check" class="btn btn-primary" onclick="playerCommitBet();showPanel();hidePanel();">Place Bet</button>
+              <button id="check" class="btn btn-primary" onclick="displayChoice();playerCommitBet();showPanel();hidePanel();">Place Bet</button>
             </form>
           </div>
         </form>
@@ -46,8 +46,8 @@
 
     <div id="panel">
       <div> 
-        <p>Bet Amount (ETH): </p>
-        <p>Choice: </p>
+        <p>Bet Amount (ETH): <span id="displayAmount"></span></p>
+        <p>Choice: <span id="displayGuess"></span></p>
       </div>
     <div id="panel3" class="row">
       <div>
@@ -69,7 +69,7 @@
       </div>
     </div>
 
-      <script>
+      <script type="text/javascript">
 
         function showPanel(){
           document.getElementById("panel").style.display = "block";
@@ -80,6 +80,10 @@
         }
         function hidePanel3(){
           document.getElementById("panel3").style.display = "none";
+        }
+        function displayChoice(){
+          var userBet = document.getElementById("newInfo").value;
+          document.getElementById("displayAmount").innerHTML = userBet;
         }
 
       var interval;
