@@ -1,7 +1,10 @@
 // Source code to interact with smart contract
-var crypto = require('crypto');
+// var crypto = require('crypto');
 //connection with node
 var web3 = new Web3(Web3.givenProvider);
+// var randomBytes = "0b763bed0e50b00894ec77a4449be5256b730c3f3777db94b34daaeae7284073";
+var randomBytes = "69e63c4ce51a8a8ef65fb1729129bfecb24bf955121432d82fb9e0fb2036e2ae";
+var tempChoice = "";
 
 // contractAddress and abi are setted after contract deploy
   var contractAddress = '0x1bB5bf909d1200fb4730d899BAd7Ab0aE8487B0b';
@@ -137,14 +140,15 @@ web3.eth.getAccounts(function(err, accounts) {
 
 // When player clicks 'Place bet' button, playerCommit is called
 function playerCommitBet() {
-  const buf = crypto.randomBytes(32);
-  console.log(
-  `${buf.length} bytes of random data: ${buf.toString('hex')}`);
+  // const buf = crypto.randomBytes(32);
+  // console.log(
+  // `${buf.length} bytes of random data: ${buf.toString('hex')}`);
 
 
   let allAreFilled = true;
   var betChoice = document.querySelector('input[name="coinFlip"]:checked').value; //stores the choice: 0/1
   var betAmt = $('#newInfo').val(); // stores the amount of the bet
+  tempChoice = betChoice;
 
   document.getElementById("bet-form").querySelectorAll("[required]").forEach(function(i) {
     if (!allAreFilled) return;
@@ -168,26 +172,40 @@ function playerCommitBet() {
     hidePanel();
   }
 
+  // Hash Function
+  function keccak256(...args) {
+    args = args.map(arg => {
+      if (typeof arg === 'string') {
+        if (arg.substring(0, 2) === '0x') {
+            return arg.slice(2)
+        } else {
+            return web3.utils.toHex(arg).slice(2)
+        }
+      }
+  
+      if (typeof arg === 'number') {
+        return leftPad((arg).toString(16), 64, 0)
+      } else {
+        return ''
+      }
+    })
+  
+    args = args.join('')
+  
+    return web3.utils.sha3(args, { encoding: 'hex' })
+  }
 
-
-  // hashes the choice
+  // hashes the choice -> need to generate rnadomBytes
   // var hasedBet = keccak256(betChoice);
-  var hasedBet = web3.utils.soliditySha3(betChoice); 
-
-
-  var secondhashBet = web3.utils.soliditySha3(hasedBet); 
-  console.log(betAmt);
-  console.log(betChoice);
-  console.log(hasedBet);
-  
-  
-  $("#newInfo").val('');
+  var hasedBet = keccak256(betChoice+randomBytes);  
+  alert(hasedBet)
   contract.methods.playerCommit (hasedBet).send( {from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
     console.log("Transaction: ", tx); 
   }).catch(function(txt)
   {
     console.log(txt);
   });
+  
 };
 
 // Click the coin and calls on reveal 
@@ -224,21 +242,3 @@ jQuery(document).ready(function($){
     });
   });
   });
-
-
-
-// function registerSetInfo() {
-//   info = $("#newInfo").val();
-//   contract.methods.setInfo (info).send( {from: account}).then( function(tx) { 
-//     console.log("Transaction: ", tx); 
-//   });
-//   $("#newInfo").val('');
-// }
-
-// function registerGetInfo() {
-//   contract.methods.getInfo().call().then( function( info ) { 
-//     console.log("info: ", info);
-//     document.getElementById('lastInfo').innerHTML = info;
-//   });    
-// }
-// Synchronous

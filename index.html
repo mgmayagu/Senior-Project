@@ -6,7 +6,8 @@
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
     <script src="./node_modules/web3/dist/web3.min.js"></script>
-    <!-- <script type="module" src="./index.js"></script> -->
+    <script src="./index.js"></script>
+    <!-- <script src="bundle.js"></script>  -->
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
 
@@ -16,30 +17,6 @@
     </div>
 
     <div id="panel2">
-    <div class="row">
-      <div id="bet-form">
-        <h2 class="sub-header">Place your bet:</h2>
-        <form class="form-inline" role="form">
-          <div class="form-group">
-            <table>
-              <tr>
-                <!-- min="0.000000000000000001"-->
-                  <input class="form-control" id="newInfo" placeholder="Amount in ETH" type="text" max="0.001" min="0.000000000000000001" required></input>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div>
-            <h2 class="sub-header">Choose Heads or Tails</h2>
-            <form action="/action_page.php">
-              <input type="radio" id="heads" name="coinFlip" value="heads" required>
-              <label for="heads">Heads</label><br>
-              <input type="radio" id="tails" name="coinFlip" value="tails" required>
-              <label for="tails">Tails</label><br>
-              <button type="button" id="check" class="btn btn-primary" onclick="displayChoice();playerCommitBet();showPanel();hidePanel();">Place Bet</button>
-            </form>
-          </div>
-        </form>
       <div class="row">
         <div id="bet-form">
           <h2 class="sub-header">Place your bet:</h2>
@@ -60,7 +37,7 @@
                 <label for="heads">Heads</label><br>
                 <input type="radio" id="tails" name="coinFlip" value="0" required>
                 <label for="tails">Tails</label><br>
-                <button id="check" class="btn btn-primary" onclick="displayChoice();playerCommitBet()">Place Bet</button>
+                <button type="button" id="check" class="btn btn-primary" onclick="displayChoice();playerCommitBet()">Place Bet</button>
               </form>
             </div>
           </form>
@@ -97,8 +74,6 @@
       </div>
     </div>
 
-    <!-- JavaScript files -->
-    <script src="bundle.js"></script>
     <script type="text/javascript">
 
       function showPanel(){
@@ -127,7 +102,7 @@
           console.log('No changes have been made');
         }
       }
-
+      
       function displayChoice(){
         var userBet = document.getElementById("newInfo").value;
         document.getElementById("displayAmount").innerHTML = userBet;
