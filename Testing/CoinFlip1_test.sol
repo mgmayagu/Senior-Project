@@ -34,7 +34,7 @@ contract CoinFlipTest is CoinFlip {
         Assert.equal(acc0, msg.sender, 'casino should be set to acc0');
     }
     
-    // Account 1 starts a game with 1 wei and submits a choice of 0.
+    // Account 1 starts a game with 2 wei and submits a choice of 0.
     // Tests if player choice is commited correctly and if the balance of the contract increased.
     /// #sender: account-1
     /// #value: 2
