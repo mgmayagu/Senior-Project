@@ -10,87 +10,117 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
 
-  <body class="container">
-
-    <h1 class="page-header">Coin Flip </h1>
+  <body class="container" >
+    <div>
+      <h1 class="page-header">Coin Flip </h1> 
+    </div>
 
     <div id="panel2">
-    <div class="row">
-      <div id="bet-form">
-        <h2 class="sub-header">Place your bet:</h2>
-        <form class="form-inline" role="form">
-          <div class="form-group">
-            <table>
-              <tr>
-                <!-- min="0.000000000000000001"-->
-                  <input class="form-control" id="newInfo" placeholder="Amount in ETH" type="text" max="0.001" min="0.000000000000000001" required></input>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div>
-            <h2 class="sub-header">Choose Heads or Tails</h2>
-            <form action="/action_page.php">
-              <input type="radio" id="heads" name="coinFlip" value="heads" required>
-              <label for="heads">Heads</label><br>
-              <input type="radio" id="tails" name="coinFlip" value="tails" required>
-              <label for="tails">Tails</label><br>
-              <button id="check" class="btn btn-primary" onclick="displayChoice();playerCommitBet();showPanel();hidePanel();">Place Bet</button>
-            </form>
-          </div>
-        </form>
+      <div class="row">
+        <div id="bet-form">
+          <h2 class="sub-header">Place your bet:</h2>
+          <h3 class="sub-header">(min: 1 max: 1000000000000000)</h3>
+          <form class="form-inline" role="form">
+            <div class="form-group">
+              <table>
+                <tr>
+                    <input class="form-control" id="newInfo" placeholder="Amount in WEI" type="number" max="1000000000000000" min="1" required>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div>
+              <h2 class="sub-header">Choose Heads or Tails</h2>
+              <form action="/action_page.php">
+                <input type="radio" id="heads" name="coinFlip" value="1" required>
+                <label for="heads">Heads</label><br>
+                <input type="radio" id="tails" name="coinFlip" value="0" required>
+                <label for="tails">Tails</label><br>
+                <button id="check" class="btn btn-primary" onclick="displayChoice();playerCommitBet()">Place Bet</button>
+              </form>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
 
     <div id="panel">
       <div> 
-        <p>Bet Amount (ETH): <span id="displayAmount"></span></p>
-        <p>Choice: <span id="displayGuess"></span></p>
+        <h3>Bet Amount (WEI): <span id="displayAmount"></span></h3>
+        <h3>Choice: <span id="displayGuess"></span></h3>
       </div>
-    <div id="panel3" class="row">
-      <div>
-    <h1>Session will end in <span class="js-timeout">2:00</span></h1>
-          <!-- <button id="js-startTimer" class="btn btn-primary">Start Countdown </button> -->
-          <!-- <button id="js-resetTimer"class="btn btn-primary">Stop &amp; Reset</button> -->
+      <div id="panel3">
+        <div>
+          <button id="forfeit" onclick="forfeitBet()" class="btn btn-primary">Forfeit Bet</button>
+        </div>
+        <div>
+          <h1>Session will end in <span class="js-timeout">2:00</span></h1>
+      </div>
     </div>
-    </div>
-
 
     <h1>Click on coin to flip</h1>
       <div class="row">
         <main role="main" class="col-lg-12 d-flex justify-content-center">
           <div id="coin">
-            <div class="side-a" id="js-resetTimer" onclick="hidePanel3()"></div>
-            <div class="side-b" id="js-resetTimer" onclick="hidePanel3()"></div>
+            <div class="side-a" id="js-resetTimer" onclick="hidePanel3(); startOver();"></div>
+            <div class="side-b" id="js-resetTimer" onclick="hidePanel3(); startOver();"></div>
           </div>
         </main>
+        <!--<div class="text-center">
+          <button type="button" id="startOver" class="btn btn-primary" onClick="window.location.href=window.location.href">Start Over</button>
+        </div> -->
       </div>
     </div>
 
-      <script type="text/javascript">
+    <script type="text/javascript">
 
-        function showPanel(){
-          document.getElementById("panel").style.display = "block";
-        }
+      function showPanel(){
+        document.getElementById("panel").style.display = "block";
+      }
 
-        function hidePanel(){
-          document.getElementById("panel2").style.display = "none";
+      function hidePanel(){
+        document.getElementById("panel2").style.display = "none";
+      }
+
+      function hidePanel3(){
+        document.getElementById("panel3").style.display = "none";
+      }
+
+      function startOver(){
+        document.getElementById("startOver").style.display = "block";
+      }
+
+      function forfeitBet(){
+        if (confirm('Are you sure you want to forfeit your bet?')) {
+          console.log('Bet was forfeited');
+          location.reload();
+          //call forfeit function
+        } else {
+          // Do nothing!
+          console.log('No changes have been made');
         }
-        function hidePanel3(){
-          document.getElementById("panel3").style.display = "none";
+      }
+
+      function displayChoice(){
+        var userBet = document.getElementById("newInfo").value;
+        document.getElementById("displayAmount").innerHTML = userBet;
+        var userChoice = document.getElementsByName("coinFlip");
+        for(i = 0; i < userChoice.length; i++) { 
+          if(userChoice[i].checked) {
+            if(userChoice[i].value == 1)
+              document.getElementById("displayGuess").innerHTML = "Heads"; 
+            if(userChoice[i].value == 0)
+              document.getElementById("displayGuess").innerHTML = "Tails";
+          }
         }
-        function displayChoice(){
-          var userBet = document.getElementById("newInfo").value;
-          document.getElementById("displayAmount").innerHTML = userBet;
-        }
+      }
 
       var interval;
 
       function countdown() {
-      clearInterval(interval);
-      interval = setInterval( function() {
+        clearInterval(interval);
+        interval = setInterval( function() {
           var timer = $('.js-timeout').html();
           timer = timer.split(':');
           var minutes = timer[0];
@@ -98,28 +128,27 @@
           seconds -= 1;
           if (minutes < 0) return;
           else if (seconds < 0 && minutes != 0) {
-              minutes -= 1;
-              seconds = 59;
+            minutes -= 1;
+            seconds = 59;
           }
           else if (seconds < 10 && length.seconds != 2) seconds = '0' + seconds;
 
           $('.js-timeout').html(minutes + ':' + seconds);
 
           if (minutes == 0 && seconds == 0) clearInterval(interval);
-      }, 1000);
+        }, 1000);
       }
 
-      $('#js-startTimer').click(function () {
-      $('.js-timeout').text("2:00");
-      countdown();
+      $('#check').click(function () {
+        $('.js-timeout').text("2:00");
+        countdown();
       });
 
       $('#js-resetTimer').click(function () {
-      $('.js-timeout').text("2:00");
-      clearInterval(interval);
+        $('.js-timeout').text("2:00");
+        clearInterval(interval);
       });
 
-      </script>
-
+    </script>
   </body>
 </html>
