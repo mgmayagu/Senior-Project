@@ -8,6 +8,7 @@
 4. Deploy Dapp
 
 ### Directory
+
 .
 ├── Contract                
 │   └── CoinFlip.sol        # SmartContract 
