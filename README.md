@@ -1,8 +1,25 @@
 # CoinFlip 
 #### by Green Team 
 
-- Clone the repository for the Front-End
-- Copy and paste code from CoinFlip.sol into Remix
+### Set up
+1. Clone the repository 
+2. Copy and paste code from Contract/CoinFlip.sol into Remix
+3. Set up Metamask
+4. Deploy Dapp
+
+### Directory
+.
+├── Contract                
+│   └── CoinFlip.sol        # SmartContract 
+├── Dapp                    # Decentralized Application
+│   ├── index.html          # Structures the web page and its content 
+│   ├── index.js            # Connects the smart contract with the app
+│   ├── package.json        # Loads dependecies
+│   ├── server.js           # Deploys the app
+│   └── style.css           # Text styling
+├── Testing                 
+│   └── CoinFlip1_test.sol  # End-to-end, integration tests 
+└── README.md
 
 ---
 
@@ -13,7 +30,7 @@
  - Add Metamask as an extension to the browser 
  - Create and account
  - Connect account with Remix
- - Link tokens using: 0xa36085F69e2889c224210F603D836748e7dC0088 
+ - Link tokens using: `0xa36085F69e2889c224210F603D836748e7dC0088` 
  
  Find a more detailed instructions [here](https://developers.rsk.co/tutorials/ethereum-devs/remix-and-metamask-with-rsk-testnet/)
 
