@@ -1,9 +1,11 @@
 // Source code to interact with smart contract
 
-// var crypto = require('crypto');
+var crypto = require('crypto');
 //connection with node
 var web3 = new Web3(Web3.givenProvider);
-var randomBytes = 0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb;
+// var randomBytes = 0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb;
+var randomBytes = generateRandomBytes();
+
 var choice = 0;
 
 // checks if Metamask is available 
@@ -161,6 +163,16 @@ function keccak256(...args) {
   args = args.join('')
 
   return web3.utils.sha3(args, { encoding: 'hex' })
+}
+
+function generateRandomBytes(){
+  var randomBytesArray = new Uint32Array(8);
+  var randomBytes= "0x";
+  randomBytesArray = crypto.getRandomValues(randomBytesArray);
+  randomBytesArray.forEach(number => {
+    randomBytes = randomBytes + number.toString(16);
+  })
+  return randomBytes;
 }
 
 // Smart contract functions
