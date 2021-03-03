@@ -1,12 +1,14 @@
 // Source code to interact with smart contract
+// var crypto = require('crypto');
 
-var crypto = require('crypto');
 //connection with node
 var web3 = new Web3(Web3.givenProvider);
 // var randomBytes = 0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb;
-var randomBytes = generateRandomBytes();
-
+var randomBytes = web3.utils.randomHex(32);
+console.log("Random Bytes " + randomBytes);
 var choice = 0;
+
+console.log();
 
 // checks if Metamask is available 
 if (typeof window.ethereum !== 'undefined') {
@@ -143,37 +145,27 @@ web3.eth.getAccounts(function(err, accounts) {
 });
 
 // Hash Function
-function keccak256(...args) {
-  args = args.map(arg => {
-    if (typeof arg === 'string') {
-      if (arg.substring(0, 2) === '0x') {
-          return arg.slice(2)
-      } else {
-          return web3.utils.toHex(arg).slice(2)
-      }
-    }
+// function keccak256(...args) {
+//   args = args.map(arg => {
+//     if (typeof arg === 'string') {
+//       if (arg.substring(0, 2) === '0x') {
+//           return arg.slice(2)
+//       } else {
+//           return web3.utils.toHex(arg).slice(2)
+//       }
+//     }
 
-    if (typeof arg === 'number') {
-      return leftPad((arg).toString(16), 64, 0)
-    } else {
-      return ''
-    }
-  })
+//     if (typeof arg === 'number') {
+//       return leftPad((arg).toString(16), 64, 0)
+//     } else {
+//       return ''
+//     }
+//   })
 
-  args = args.join('')
+//   args = args.join('')
 
-  return web3.utils.sha3(args, { encoding: 'hex' })
-}
-
-function generateRandomBytes(){
-  var randomBytesArray = new Uint32Array(8);
-  var randomBytes= "0x";
-  randomBytesArray = crypto.getRandomValues(randomBytesArray);
-  randomBytesArray.forEach(number => {
-    randomBytes = randomBytes + number.toString(16);
-  })
-  return randomBytes;
-}
+//   return web3.utils.sha3(args, { encoding: 'hex' })
+// }
 
 // Smart contract functions
 
@@ -215,11 +207,11 @@ function playerCommitBet() {
   if (betChoice == "1"){
     choice = 1;
   }
-  // hashes the choice -> need to generate rnadomBytes
-  // var hasedBet = keccak256(betChoice);
-  var hasedBet = web3.utils.sha3(choice+randomBytes.toString());  
-  // alert(hasedBet)
-  contract.methods.playerCommit(hasedBet).send( {from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
+  // hashes the choice -> need to generate randomBytes
+  // var hashedBet = keccak256(betChoice);
+  var hashedBet = web3.utils.soliditySha3(choice, randomBytes);
+  // alert(hashedBet)
+  contract.methods.playerCommit(hashedBet).send( {from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
     console.log("Transaction: ", tx); 
   }).catch(function(txt)
   {
@@ -264,7 +256,7 @@ jQuery(document).ready(function($){
       }
     }, 100);
 
-    contract.methods.reveal (tempChoice, randomBytes).send( {from: account}).then( function(tx) { 
+    contract.methods.reveal (choice, randomBytes).send( {from: account}).then( function(tx) { 
       alert("")
       console.log("Transaction: ", tx); 
     }).catch(function(txt)
