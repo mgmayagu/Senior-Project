@@ -161,11 +161,12 @@ function playerCommitBet() {
   if (!allAreFilled) {
     //alert('Fill all the fields');
   }
+  if (betAmt < 1 || betAmt > 1000000000000000){
+    //alert('Fill all the fields');
+  }
   else {
-    $('#check').click(function () {
-      $('.js-timeout').text("2:00");
-      countdown();
-      });
+    showPanel();
+    hidePanel();
   }
 
 
@@ -200,10 +201,18 @@ jQuery(document).ready(function($){
       if(flipResult <= 0.5){
         $('#coin').addClass('heads');
         console.log('it is tails');
+        if (confirm('Its tails!')) {
+          location.reload();
+          //call forfeit function
+        }
       }
       else{
         $('#coin').addClass('tails');
         console.log('it is heads');
+        if (confirm('Its heads!')) {
+          location.reload();
+          //call forfeit function
+        }
       }
     }, 100);
 
