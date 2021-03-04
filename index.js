@@ -197,22 +197,25 @@ jQuery(document).ready(function($){
   $('#coin').on('click', function(){
     // stores the result for output
     var flipResult;
-    contract.methods.seeResult().call({from: account}).then(console.log).catch(function(txt)
-    {
-      console.log(txt);
-    });
-    // console.log('result: ' + flipResult);
+    
+    contract.methods.seeResult().call({from: account}).then(
+      data => {
+        flipResult = data;
+        console.log('Result: ' + flipResult);
+      }
+    );
 
     // flips the coin
     $('#coin').removeClass();
     setTimeout(function(){
       if(flipResult <= 0.5){
-        $('#coin').addClass('heads');
+        $('#coin').addClass('tails');
         console.log('it is tails');
       }
       else{
-        $('#coin').addClass('tails');
+        $('#coin').addClass('heads');
         console.log('it is heads');
+        
       }
     }, 100);
 
