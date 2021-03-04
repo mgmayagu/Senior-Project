@@ -188,55 +188,41 @@ function playerCommitBet() {
   {
     console.log(txt);
   });
+
 };
 
 // Click the coin and calls on reveal 
 jQuery(document).ready(function($){
-  var result = contract.methods.seeResult().call({from: account});
-  console.log('result: ' + result);
-
+  
   $('#coin').on('click', function(){
-    var flipResult = Math.random();
+    // stores the result for output
+    var flipResult;
+    contract.methods.seeResult().call({from: account}).then(console.log).catch(function(txt)
+    {
+      console.log(txt);
+    });
+    // console.log('result: ' + flipResult);
+
+    // flips the coin
     $('#coin').removeClass();
     setTimeout(function(){
       if(flipResult <= 0.5){
         $('#coin').addClass('heads');
         console.log('it is tails');
-        if (confirm('Its tails!')) {
-          location.reload();
-          //call forfeit function
-          contract.methods.forfeitGame().send( {from: account}).then( function(tx) { 
-            console.log("Transaction: ", tx); 
-          }).catch(function(txt)
-          {
-            console.log(txt);
-          });
-        }
       }
       else{
         $('#coin').addClass('tails');
         console.log('it is heads');
-        if (confirm('Its heads!')) {
-          location.reload();
-          //call forfeit function
-          contract.methods.forfeitGame().send( {from: account}).then( function(tx) { 
-            console.log("Transaction: ", tx); 
-          }).catch(function(txt)
-          {
-            console.log(txt);
-          });
-        }
       }
     }, 100);
 
+    // calls the reveal method from the contract
     contract.methods.reveal (choice, randomBytes).send( {from: account}).then( function(tx) { 
-      alert("")
       console.log("Transaction: ", tx); 
     }).catch(function(txt)
     {
       console.log(txt);
     });
-
   });
 });
 
@@ -261,6 +247,12 @@ function forfeitBet(){
     console.log('Bet was forfeited');
     location.reload();
     //call forfeit function
+    contract.methods.forfeitGame().send( {from: account}).then( function(tx) { 
+      console.log("Transaction: ", tx); 
+    }).catch(function(txt)
+    {
+      console.log(txt);
+    });
   } else {
     // Do nothing!
     console.log('No changes have been made');
@@ -280,47 +272,3 @@ function displayChoice(){
     }
   }
 }
-
-var interval;
-
-function countdown() {
-  clearInterval(interval);
-  interval = setInterval( function() {
-    var timer = $('.js-timeout').html();
-    timer = timer.split(':');
-    var minutes = timer[0];
-    var seconds = timer[1];
-    seconds -= 1;
-    if (minutes < 0) return;
-    else if (seconds < 0 && minutes != 0) {
-      minutes -= 1;
-      seconds = 59;
-    }
-    else if (seconds < 10 && length.seconds != 2) seconds = '0' + seconds;
-
-    $('.js-timeout').html(minutes + ':' + seconds);
-
-    if (minutes == 0 && seconds == 0)
-    {
-      // calls forfeitGame function when time is up
-      contract.methods.forfeitGame().send( {from: account}).then( function(tx) { 
-        console.log("Transaction: ", tx); 
-        alert("Time is up!")
-      }).catch(function(txt)
-      {
-        console.log(txt);
-      }); 
-      clearInterval(interval); 
-    }
-  }, 1000);
-}
-
-$('#check').click(function () {
-  $('.js-timeout').text("2:00");
-  countdown();
-});
-
-$('#js-resetTimer').click(function () {
-  $('.js-timeout').text("2:00");
-  clearInterval(interval);
-});
