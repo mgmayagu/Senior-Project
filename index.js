@@ -1,14 +1,14 @@
 // Source code to interact with smart contract
-// var crypto = require('crypto');
 
 //connection with node
 var web3 = new Web3(Web3.givenProvider);
-// var randomBytes = 0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb;
+
+// generates random bytes for the hash
 var randomBytes = web3.utils.randomHex(32);
 console.log("Random Bytes " + randomBytes);
-var choice = 0;
 
-console.log();
+// default choice - tails
+var choice = 0;
 
 // checks if Metamask is available 
 if (typeof window.ethereum !== 'undefined') {
@@ -16,30 +16,8 @@ if (typeof window.ethereum !== 'undefined') {
 } else alert("install metamask");
 
 // contractAddress and abi are setted after contract deploy
-  var contractAddress = '0x30922d87841514e0237F4DFcFfBae31B3d435a8e';
+  var contractAddress = '0xf8D059DDd736D75B170f3d9D6A03Ab878a0b380e';
   var abi = [
-    {
-      "inputs": [],
-      "stateMutability": "payable",
-      "type": "constructor"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "fallback"
-    },
-    {
-      "inputs": [],
-      "name": "casinoDeposit",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
     {
       "inputs": [],
       "name": "collectGameTimeout",
@@ -59,19 +37,6 @@ if (typeof window.ethereum !== 'undefined') {
       "name": "forfeitGame",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -107,7 +72,20 @@ if (typeof window.ethereum !== 'undefined') {
     },
     {
       "inputs": [],
-      "name": "seeResult",
+      "stateMutability": "payable",
+      "type": "constructor"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    },
+    {
+      "inputs": [],
+      "name": "casinoDeposit",
       "outputs": [
         {
           "internalType": "uint256",
@@ -119,8 +97,30 @@ if (typeof window.ethereum !== 'undefined') {
       "type": "function"
     },
     {
-      "stateMutability": "payable",
-      "type": "receive"
+      "inputs": [],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "seeResult",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ]
   
@@ -129,7 +129,6 @@ contract = new web3.eth.Contract(abi, contractAddress);
 
 // Accounts
 var account;
-
 web3.eth.getAccounts(function(err, accounts) {
   if (err != null) {
     alert("Error retrieving accounts.");
@@ -144,36 +143,12 @@ web3.eth.getAccounts(function(err, accounts) {
   web3.eth.defaultAccount = account;
 });
 
-// Hash Function
-// function keccak256(...args) {
-//   args = args.map(arg => {
-//     if (typeof arg === 'string') {
-//       if (arg.substring(0, 2) === '0x') {
-//           return arg.slice(2)
-//       } else {
-//           return web3.utils.toHex(arg).slice(2)
-//       }
-//     }
-
-//     if (typeof arg === 'number') {
-//       return leftPad((arg).toString(16), 64, 0)
-//     } else {
-//       return ''
-//     }
-//   })
-
-//   args = args.join('')
-
-//   return web3.utils.sha3(args, { encoding: 'hex' })
-// }
-
 // Smart contract functions
-
-// When player clicks 'Place bet' button, playerCommit is called
+// When player clicks 'Place bet' button, playerCommit is called from smart contract
 function playerCommitBet() {
   
   let allAreFilled = true;
-
+  // check the required field are filled before placing the bet
   document.getElementById("bet-form").querySelectorAll("[required]").forEach(function(i) {
     if (!allAreFilled) return;
     if (!i.value) allAreFilled = false;
@@ -186,32 +161,28 @@ function playerCommitBet() {
     }
   })
   if (!allAreFilled) {
-    //alert('Fill all the fields');
+    alert('Fill all the fields');
   }
   if (betAmt < 1 || betAmt > 1000000000000000){
-    //alert('Fill all the fields');
+    alert('Fill all the fields');
   }
   else {
     showPanel();
     hidePanel();
   }
 
-  // const buf = crypto.randomBytes(32);
-  // console.log(
-  // `${buf.length} bytes of random data: ${buf.toString('hex')}`);
-
-  var betChoice = document.querySelector('input[name="coinFlip"]:checked').value; //stores the choice: 0/1
-  var betAmt = $('#newInfo').val(); // stores the amount of the bet
-  tempChoice = betChoice;
-
-  if (betChoice == "1"){
-    choice = 1;
-  }
-  // hashes the choice -> need to generate randomBytes
-  // var hashedBet = keccak256(betChoice);
+  //stores the choice: 0/1 as a String
+  var betChoice = document.querySelector('input[name="coinFlip"]:checked').value; 
+  // stores the amount of the bet
+  var betAmt = $('#newInfo').val();
+  // if betChoice is '1' updated global variable choice
+  if (betChoice == "1") choice = 1;
+  // hashes user choice and the random bytes
   var hashedBet = web3.utils.soliditySha3(choice, randomBytes);
-  // alert(hashedBet)
-  contract.methods.playerCommit(hashedBet).send( {from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
+  console.log("Hashed choice " + hashedBet);
+  console.log('Account: ' + account);
+  // deploys the function in the smart contract
+  contract.methods.playerCommit(hashedBet).send({from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
     console.log("Transaction: ", tx); 
   }).catch(function(txt)
   {
@@ -221,6 +192,8 @@ function playerCommitBet() {
 
 // Click the coin and calls on reveal 
 jQuery(document).ready(function($){
+  var result = contract.methods.seeResult().call({from: account});
+  console.log('result: ' + result);
 
   $('#coin').on('click', function(){
     var flipResult = Math.random();

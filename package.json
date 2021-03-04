@@ -1,13 +1,13 @@
 {
-  "name": "Register",
+  "name": "CoinFlip",
   "version": "1.0.0",
-  "description": "",
+  "description": "CoinFlip game using smart contract",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Green Team",
   "license": "ISC",
   "dependencies": {
     "crypto-js": "^4.0.0",
