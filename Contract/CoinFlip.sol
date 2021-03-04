@@ -61,11 +61,7 @@ contract CoinFlip {
         sendViaCall(contractAddress, playerMap[_playerAddress].betAmount); // Sends bet to the contract
         matchBet(playerMap[_playerAddress].betAmount); // Contract will match the bet
         playerMap[_playerAddress].gameTimeOut = now + 2 minutes; // Player will have 2 minutes from when they place the bet to claim their winnings
-        playerMap[_playerAddress].result = 
-        
-        
-        
-        (); // Stores the result of the coin flip for that player
+        playerMap[_playerAddress].result = flipCoin(); // Stores the result of the coin flip for that player
     }
     
     // Function to receive Ether. msg.data must be empty
