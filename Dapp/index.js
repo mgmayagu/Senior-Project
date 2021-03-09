@@ -16,8 +16,30 @@ if (typeof window.ethereum !== 'undefined') {
 } else alert("install metamask");
 
 // contractAddress and abi are setted after contract deploy
-  var contractAddress = '0xf8D059DDd736D75B170f3d9D6A03Ab878a0b380e';
+  var contractAddress = '0xF0130d13A70D869f4fA2E1f8e2bFE0b97e6d251E';
   var abi = [
+    {
+      "inputs": [],
+      "stateMutability": "payable",
+      "type": "constructor"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "inputs": [],
+      "name": "casinoDeposit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
     {
       "inputs": [],
       "name": "collectGameTimeout",
@@ -37,6 +59,19 @@ if (typeof window.ethereum !== 'undefined') {
       "name": "forfeitGame",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -72,45 +107,6 @@ if (typeof window.ethereum !== 'undefined') {
     },
     {
       "inputs": [],
-      "stateMutability": "payable",
-      "type": "constructor"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "fallback"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive"
-    },
-    {
-      "inputs": [],
-      "name": "casinoDeposit",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "seeResult",
       "outputs": [
         {
@@ -121,11 +117,13 @@ if (typeof window.ethereum !== 'undefined') {
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
     }
   ]
   
-//contract instance
-contract = new web3.eth.Contract(abi, contractAddress);
 
 // Accounts
 var account;
@@ -142,6 +140,15 @@ web3.eth.getAccounts(function(err, accounts) {
   console.log('Account: ' + account);
   web3.eth.defaultAccount = account;
 });
+
+//contract instance
+let contract = new web3.eth.Contract(abi, contractAddress
+  , {
+  from: account,
+  gasLimit: web3.utils.toHex(7900000),
+  gasPrice: web3.utils.toHex(1000000000)
+});
+
 
 // Smart contract functions
 // When player clicks 'Place bet' button, playerCommit is called from smart contract
@@ -181,12 +188,31 @@ function playerCommitBet() {
   var hashedBet = web3.utils.soliditySha3(choice, randomBytes);
   console.log("Hashed choice " + hashedBet);
   console.log('Account: ' + account);
+  
   // deploys the function in the smart contract
-  contract.methods.playerCommit(hashedBet).send({from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
-    console.log("Transaction: ", tx); 
-  }).catch(function(txt)
-  {
-    console.log(txt);
+  // contract.methods.playerCommit(hashedBet).send({from: account, value:web3.utils.toWei(betAmt,'wei')}).then( function(tx) { 
+  //   console.log("Transaction: ", tx); 
+  // }).catch(function(txt)
+  // {
+  //   console.log(txt);
+  // });
+
+  contract.methods.playerCommit(hashedBet).send({from: account, value:web3.utils.toWei(betAmt,'wei')}).on("receipt", (receipt) => {
+    // Transaction succeeded
+    contract.getPastEvents(
+        "Bet Commited", {
+            fromBlock: receipt.blockNumber,
+            toBlock: receipt.blockNumber
+        }, (errors, events) => {
+            for (let event in events) {
+                let returnValues = events[event].returnValues;
+                console.log(returnValues.toString())
+            }
+        });
+  
+  }).catch(function (e) {
+    // Transaction rejected or failed
+    console.log(e);
   });
 
 };
@@ -220,12 +246,33 @@ jQuery(document).ready(function($){
     }, 100);
 
     // calls the reveal method from the contract
-    contract.methods.reveal (choice, randomBytes).send( {from: account}).then( function(tx) { 
-      console.log("Transaction: ", tx); 
-    }).catch(function(txt)
-    {
-      console.log(txt);
+    // contract.methods.reveal (choice, randomBytes).send( {from: account}).then( function(tx) { 
+    //   flipResult = data;
+    //   console.log('Result Revealed: ' + flipResult);
+    //   console.log("Transaction: ", tx); 
+    // }).catch(function(txt)
+    // {
+    //   console.log(txt);
+    // });
+
+    contract.methods.reveal (choice, randomBytes).send( {from: account}).on("receipt", (receipt) => {
+      // Transaction succeeded
+      contract.getPastEvents(
+          "Bet Commited", {
+              fromBlock: receipt.blockNumber,
+              toBlock: receipt.blockNumber
+          }, (errors, events) => {
+              for (let event in events) {
+                  let returnValues = events[event].returnValues;
+                  console.log(returnValues.toString())
+              }
+          });
+    
+    }).catch(function (e) {
+      // Transaction rejected or failed
+      console.log(e);
     });
+
   });
 });
 
@@ -248,9 +295,11 @@ function startOver(){
 function forfeitBet(){
   if (confirm('Are you sure you want to forfeit your bet?')) {
     console.log('Bet was forfeited');
-    location.reload();
+    // location.reload();
+    setTimeout(location.reload.bind(location), 3000);
     //call forfeit function
     contract.methods.forfeitGame().send( {from: account}).then( function(tx) { 
+      console.log("Bet Forfeited!");
       console.log("Transaction: ", tx); 
     }).catch(function(txt)
     {
@@ -275,3 +324,5 @@ function displayChoice(){
     }
   }
 }
+
+
